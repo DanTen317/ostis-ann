@@ -44,7 +44,7 @@ const API: AxiosInstance = axios.create({
 
 export const api = {
 
-    async chat(question: string, model: string = "llama3.2"): Promise<ChatResponse> {
+    async chat(question: string, model: string = "gemma3"): Promise<ChatResponse> {
         const payload: ChatRequest = {question, model};
         const {data} = await API.post<ChatResponse>("/chat", payload);
         return data;
