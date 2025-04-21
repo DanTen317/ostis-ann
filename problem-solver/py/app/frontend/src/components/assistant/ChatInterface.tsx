@@ -38,7 +38,7 @@ const LOCAL_STORAGE_KEY = "chat-messages";
 const ChatInterface: React.FC = () => {
         const [messages, setMessages] = useState<Message[]>(() => {
             try {
-                const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+                const saved = sessionStorage.getItem(LOCAL_STORAGE_KEY);
                 if (saved) {
                     const parsed: Message[] = JSON.parse(saved);
                     return parsed.map(m => ({...m, timestamp: new Date(m.timestamp)}));
@@ -70,7 +70,7 @@ const ChatInterface: React.FC = () => {
         const containerRef = useRef<HTMLDivElement | null>(null);
 
         useEffect(() => {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(messages));
+            sessionStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(messages));
         }, [messages]);
 
         useEffect(() => {
