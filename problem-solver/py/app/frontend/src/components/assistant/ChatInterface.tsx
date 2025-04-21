@@ -182,10 +182,9 @@ const ChatInterface: React.FC = () => {
             const fileList = e.target.files;
             if (!fileList?.length) return;
 
-            // Для каждого выбранного файла отправляем POST /upload-doc
             for (const file of Array.from(fileList)) {
                 try {
-                    const resp = await api.uploadDoc(file);  // <- передаём File
+                    const resp = await api.uploadDoc(file);
                     console.log(`Uploaded id=${resp.file_id}`, resp.message);
                 } catch (err) {
                     console.error(err);
@@ -193,8 +192,8 @@ const ChatInterface: React.FC = () => {
             }
 
             try {
-                // const updated = await api.getFileList();
-                //  setFiles(updated);
+                 const updated = await api.getFileList();
+                  setFiles(updated);
             } catch (err) {
                 console.error("Не удалось обновить список файлов:", err);
             } finally {
@@ -220,7 +219,6 @@ const ChatInterface: React.FC = () => {
                 <CardHeader>
                     <CardTitle
                         className="flex flex-wrap items-center gap-2 justify-between"
-                        // Use ref for potential future enhancements if needed
                     >
                         <div className="flex items-center gap-2 font-semibold text-lg shrink-0">
                             <BrainCircuit className="h-5 w-5 text-neural-accent"/>
@@ -258,7 +256,7 @@ const ChatInterface: React.FC = () => {
                                         {files.map((file) => (
                                             <li
                                                 key={file.filename}
-                                                className="px-3 py-2 cursor-default hover:bg-neural-accent/30 rounded select-text break-words"
+                                                className="px-3 py-2 cursor-default hover:bg-neural-accent/30 rounded select-text break-words text-[0.875rem]"
                                                 title={file.filename}
                                             >
                                                 {file.filename}
@@ -317,7 +315,7 @@ const ChatInterface: React.FC = () => {
                                         {files.map((file) => (
                                             <li
                                                 key={file.filename}
-                                                className="px-3 py-2 cursor-pointer hover:bg-destructive-foreground hover:text-destructive rounded select-text break-words"
+                                                className="px-3 py-2 cursor-pointer hover:bg-destructive-foreground hover:text-destructive rounded select-text break-words text-[0.875rem]"
                                                 onClick={() => {
                                                     handleDeleteFile(file);
                                                 }}
