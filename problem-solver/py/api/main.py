@@ -1,4 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from starlette.middleware.cors import CORSMiddleware
+
 from pydantic_models import QueryInput, QueryResponse, DocumentInfo, DeleteFileRequest
 from langchain_utils import get_rag_chain
 from db_utils import insert_application_logs, get_chat_history, get_all_documents, insert_document_record, delete_document_record
@@ -11,6 +13,15 @@ import shutil
 logging.basicConfig(filename='app.log', level=logging.INFO)
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
 
 @app.post("/chat", response_model=QueryResponse)
 def chat(query_input: QueryInput):
