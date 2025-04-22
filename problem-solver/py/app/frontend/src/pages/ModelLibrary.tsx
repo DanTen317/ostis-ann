@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ModelCard from '@/components/neural/ModelCard';
 import { Search, Filter, ArrowDownAZ, ArrowUpAZ } from 'lucide-react';
-import { sampleModels } from '@/lib/sampleData';
+import { sampleModels } from '@/library/sampleData';
 
 const ModelLibrary = () => {
   const [searchTerm, setSearchTerm] = useState('');

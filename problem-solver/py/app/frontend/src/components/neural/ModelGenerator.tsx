@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, Code, Settings2, Wand2 } from "lucide-react";
 import { NeuralModelConfig } from '@/types/neural';
 import NetworkVisualizer from './NetworkVisualizer';
-import { generateSampleNetwork } from '@/lib/sampleData';
+import { generateSampleNetwork } from '@/library/sampleData';
 
 const ModelGenerator: React.FC = () => {
   const [taskDescription, setTaskDescription] = useState('');

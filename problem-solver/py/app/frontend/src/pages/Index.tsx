@@ -7,7 +7,7 @@ import StatCard from '@/components/dashboard/StatCard';
 import ModelCard from '@/components/neural/ModelCard';
 import ChatInterface from '@/components/assistant/ChatInterface';
 import { BarChart, Brain, Construction, Clock, ArrowRight } from 'lucide-react';
-import { sampleModels } from '@/lib/sampleData';
+import { sampleModels } from '@/library/sampleData';
 
 const Index = () => {
   // Get only the first 3 models for the recent models section

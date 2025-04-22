@@ -18,7 +18,7 @@ import {
     User,
     Trash2
 } from "lucide-react";
-import {cn, api} from '@/lib/utils';
+import {cn, api} from '@/library/utils';
 
 interface Message {
     id: string;

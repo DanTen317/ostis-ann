@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { BarChartBig, LineChart, PieChart, ArrowDownToLine } from 'lucide-react';
 import ComparisonChart from '@/components/compare/ComparisonChart';
-import { sampleComparisonData } from '@/lib/sampleData';
+import { sampleComparisonData } from '@/library/sampleData';
 
 const CompareModels = () => {
   return (

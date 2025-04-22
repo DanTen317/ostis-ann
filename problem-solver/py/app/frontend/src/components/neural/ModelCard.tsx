@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Download, BookOpen, Share2, Star } from "lucide-react";
-import { cn } from '@/lib/utils';
+import { cn } from '@/library/utils';
 import { NeuralModel } from '@/types/neural'
 
 interface ModelCardProps {
