@@ -245,7 +245,7 @@ const ChatInterface: React.FC = () => {
                                     <ul
                                         ref={viewFilesRef}
                                         role="listbox"
-                                        className="absolute right-0 mt-1 max-h-64 w-48 overflow-auto rounded-md border border-neural-accent bg-neural-primary/90 text-white shadow-lg z-50 backdrop-blur-sm"
+                                        className="absolute right-0 mt-1 max-h-64 w-48 overflow-auto rounded-md border border-neural-accent bg-neural-primary/90 text-white shadow-lg z-50 backdrop-blur-sm [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neural-accent/20 hover:[&::-webkit-scrollbar-thumb]:bg-neural-accent/30 [&::-webkit-scrollbar-horizontal]:w-2"
                                         tabIndex={-1}
                                     >
                                         {files.length === 0 && (
@@ -304,7 +304,7 @@ const ChatInterface: React.FC = () => {
                                     <ul
                                         ref={deleteFilesRef}
                                         role="listbox"
-                                        className="absolute right-0 mt-1 max-h-64 w-48 overflow-auto rounded-md border border-destructive bg-destructive/90 text-destructive-foreground shadow-lg backdrop-blur-sm z-50"
+                                        className="absolute right-0 mt-1 max-h-64 w-48 overflow-auto rounded-md border border-destructive bg-destructive/90 text-destructive-foreground shadow-lg backdrop-blur-sm z-50 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neural-accent/20 hover:[&::-webkit-scrollbar-thumb]:bg-neural-accent/30 [&::-webkit-scrollbar-horizontal]:w-2"
                                         tabIndex={-1}
                                     >
                                         {files.length === 0 && (
@@ -332,18 +332,19 @@ const ChatInterface: React.FC = () => {
                         </div>
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {messages.map((message) => (
+                <CardContent
+                    className="flex-1 overflow-auto p-4 space-y-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neural-accent/20 hover:[&::-webkit-scrollbar-thumb]:bg-neural-accent/30 [&::-webkit-scrollbar-horizontal]:w-2">
+                {messages.map((message) => (
                         <div
                             key={message.id}
                             className={cn(
                                 "flex items-start gap-3 max-w-[80%]",
-                                message.sender === 'user' ? "ml-auto" : ""
+                                message.sender === 'user' ? "ml-auto flex-row-reverse" : ""
                             )}
                         >
                             {message.sender === 'assistant' && (
                                 <Avatar className="w-8 h-8 border bg-neural-accent/20">
-                                    <BrainCircuit className="h-4 w-4 text-neural-primary"/>
+                                    <BrainCircuit className="h-6 w-6 text-neural-primary"/>
                                 </Avatar>
                             )}
                             <div>
@@ -363,7 +364,7 @@ const ChatInterface: React.FC = () => {
                             </div>
                             {message.sender === 'user' && (
                                 <Avatar className="w-8 h-8 border">
-                                    <User className="h-4 w-4"/>
+                                    <User className="h-6 w-6"/>
                                 </Avatar>
                             )}
                         </div>
@@ -390,14 +391,14 @@ const ChatInterface: React.FC = () => {
                             <div className="flex justify-between items-center">
                                 <h4 className="text-sm font-semibold text-white">Добавить файл</h4>
                                 <Button size="sm" variant="ghost" onClick={handleAddFileCancel}
-                                        className="text-white hover:text-neutral-200">Отмена</Button>
+                                        className="text-white hover:text-neutral-200 ">Отмена</Button>
                             </div>
                             <input
                                 type="file"
                                 multiple
                                 onChange={handleFileUpload}
                                 ref={fileInputRef}
-                                className="file-input-bordered file-input file-input-sm w-full bg-white text-black"
+                                className="file-input-bordered file-input file-input-sm w-full rounded-lg bg-neural-accent/50 hover:bg-accent-foreground/50 text-foreground"
                             />
                         </div>
                     )}
