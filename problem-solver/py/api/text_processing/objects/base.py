@@ -33,7 +33,8 @@ class TextBlock(Block):
 class ImageBlock(Block):
     """Image block."""
     image_path: PathLike = field(default="")
-    caption: Optional[str] = None
+    caption: Optional['ImageCaption'] = None
+    text_blocks: List[TextBlock] = field(default_factory=list)
     type: str = field(default="image")
 
 
@@ -43,6 +44,18 @@ class TableBlock(Block):
     table_data: Any = field(default="")
     caption: Optional[str] = None
     type: str = field(default="table")
+
+
+@dataclass
+class Header(TextBlock):
+    """Header block."""
+    type: str = field(default="header")
+
+
+@dataclass
+class ImageCaption(TextBlock):
+    """Image caption block."""
+    type: str = field(default="image_caption")
 
 
 @dataclass
