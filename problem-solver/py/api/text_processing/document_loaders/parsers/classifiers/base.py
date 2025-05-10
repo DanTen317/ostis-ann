@@ -1,7 +1,7 @@
 import re
 from typing import List
 
-from ....objects import Block, ImageBlock, TextBlock, ImageCaption
+from ....objects import Block, ImageBlock, TextBlock, ImageCaption, Header
 
 
 class ObjectsClassifier:
@@ -43,7 +43,7 @@ class ObjectsClassifier:
             if obj.page == page:
                 page_objects.append(obj)
             else:
-                page_objects.sort(key=lambda obj: obj.bbox[1])
+                page_objects.sort(key=lambda obj: obj.bbox[3])
                 page_objects.reverse()
                 processed_objects.extend(self.process_page(page_objects))
                 page_objects = [obj]
@@ -82,9 +82,61 @@ class ObjectsClassifier:
 
             restructured_objects.append(obj)
         restructured_objects.extend(images)
-        restructured_objects.sort(key=lambda obj: obj.bbox[1])
+        restructured_objects.sort(key=lambda obj: obj.bbox[3])
         restructured_objects.reverse()
+        page_header, ids_to_remove = self.define_page_header(restructured_objects)
+        if page_header:
+            restructured_objects = [obj for obj in restructured_objects if obj.id not in ids_to_remove]
+            restructured_objects.insert(0, page_header)
+
         return restructured_objects
+
+    def define_page_header(self, page_object: List[Block]):
+        first_text_block = None
+        merged_ids = []
+        for obj in page_object:
+            if isinstance(obj, TextBlock):
+                first_text_block = obj
+                break
+        if first_text_block:
+            page_header = []
+            for obj in page_object:
+                if isinstance(obj, TextBlock):
+                    if (first_text_block.bbox[3] >= obj.bbox[1] >= first_text_block.bbox[1]
+                            or first_text_block.bbox[3] >= obj.bbox[3] >= first_text_block.bbox[1] or
+                            obj.bbox[3] >= first_text_block.bbox[1] >= obj.bbox[1]):
+                        page_header.append(obj)
+            if page_header:
+                is_header = False
+                for it in [re.match(r"\d+\s+.*\n*$", obj.text) for obj in page_header]:
+                    if it is not None:
+                        is_header = True
+                        break
+
+                if is_header:
+                    page_header.sort(key=lambda item: item.bbox[3])
+                    page_header.reverse()
+                    merged_ids = [obj.id for obj in page_header]
+                    page_header = Header(
+                        id=first_text_block.id,
+                        page=first_text_block.page,
+                        bbox=
+                        (
+                            min(obj.bbox[0] for obj in page_header),
+                            min(obj.bbox[1] for obj in page_header),
+                            max(obj.bbox[2] for obj in page_header),
+                            max(obj.bbox[3] for obj in page_header)
+                        ),
+                        text=' '.join(obj.text for obj in page_header if hasattr(obj, 'text'))
+                    )
+                    page_header.text.replace('\n', ' ')
+                    page_header.text.replace('\t', ' ')
+                    page_header.text.replace('  ', ' ')
+                else:
+                    return None, None
+        else:
+            return None, None
+        return page_header, merged_ids
 
     def find_images(self, page_objects: List[Block]) -> List[ImageBlock]:
         """
