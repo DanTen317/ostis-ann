@@ -1,10 +1,11 @@
 from pathlib import PurePath
-from typing import Optional, Union, Iterator
+from typing import Optional, Union, Iterator, List
 
 from api.text_processing.document_loaders.parsers.classifiers import ObjectsClassifier
+from api.text_processing.document_loaders.parsers.cleaners import BaseCleaner
 from api.text_processing.document_loaders.parsers.extractors import PDFMinerExtractor
 from api.text_processing.document_loaders.base import BaseFileParser
-from api.text_processing.objects import Document
+from api.text_processing.objects import Document, Block
 
 
 class PDFMinerParser(BaseFileParser):
@@ -17,6 +18,7 @@ class PDFMinerParser(BaseFileParser):
         self.password = password
         self.extractor = PDFMinerExtractor(print_logs=True)
         self.object_classifier = ObjectsClassifier()
+        self.cleaner = BaseCleaner()
 
     @staticmethod
     def decode_text(s: Union[bytes, str]) -> str:
@@ -46,5 +48,24 @@ class PDFMinerParser(BaseFileParser):
         objects = self.extractor.load(file_path)
 
         objects = self.object_classifier.classify(objects)
-        self.extractor.save_to_json(objects, f"output.json")
-        return objects
+        text_blocks = self._remove_images(objects)
+
+        for text_block in text_blocks:
+            text_block.text = self.cleaner.clean(text_block.text)
+
+        self.extractor.save_to_json(text_blocks, f"output.json")
+        print(len(objects), len(text_blocks))
+
+        return text_blocks
+
+    @staticmethod
+    def _remove_images(objects) -> List[Block]:
+        text_blocks = []
+        for obj in objects:
+            if obj.type not in ["image"]:
+                text_blocks.append(obj)
+        return text_blocks
+
+
+pser = PDFMinerParser()
+a = pser.lazy_parse(r"C:\Users\Danii\Downloads\Golovko.pdf")
