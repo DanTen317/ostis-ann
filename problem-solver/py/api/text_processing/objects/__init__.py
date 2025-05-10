@@ -11,5 +11,7 @@ __all__ = \
         'TableBlock',
         'Section',
         'Chapter',
-        'Document'
+        'Document',
+        'ImageCaption',
+        'Header',
     ]
