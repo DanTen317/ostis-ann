@@ -81,6 +81,7 @@ class BlockMerger:
                         )
                     )
         header_blocks_ids = [header.id for header in header_blocks]
+        blocks = [block for block in blocks if block.type!="page_header"]
         for i, block in enumerate(blocks):
             if block.id in header_blocks_ids:
                 header_block = next(h for h in header_blocks if h.id == block.id)
