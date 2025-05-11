@@ -79,5 +79,5 @@ class Chapter(BaseObject):
 class Document(BaseObject):
     """Document."""
     filename: str = field(default="")
-    sections: List[Chapter] = field(default_factory=list)
+    chapters: List[Chapter] = field(default_factory=list)
     type: str = field(default="document")
