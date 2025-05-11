@@ -7,7 +7,7 @@ try:
 except ImportError:
     raise ImportError("pdfminer.six package not found, please install it with `pip install pdfminer.six`")
 
-from ....objects import TextBlock, ImageBlock
+from ....objects import TextBlock, ImageBlock, BaseObject
 
 
 class PDFMinerExtractor:
@@ -127,6 +127,8 @@ class PDFMinerExtractor:
             Dictionary representation of the object
         """
         if isinstance(obj, (TextBlock, ImageBlock)):
+            return obj.__dict__
+        if isinstance(obj, BaseObject):
             return obj.__dict__
         return str(obj)
 
