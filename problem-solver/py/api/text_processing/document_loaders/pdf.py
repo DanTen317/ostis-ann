@@ -1,7 +1,7 @@
 import os.path
 from abc import ABC
 from pathlib import PurePath
-from typing import Union, Optional, Iterator
+from typing import Union, Optional, Iterator, List
 
 from api.text_processing.document_loaders.base import BaseLoader
 from api.text_processing.document_loaders.parsers.pdf import PDFMinerParser
@@ -30,7 +30,7 @@ class PDFMinerLoader(BasePDFLoader):
         self.parser = PDFMinerParser(
             password=password
         )
-    def lazy_load(self) -> Iterator[Document]:
+    def lazy_load(self) -> Document:
         file = self.file_path
-        yield from self.parser.lazy_parse(file)
+        return self.parser.lazy_parse(file)
 

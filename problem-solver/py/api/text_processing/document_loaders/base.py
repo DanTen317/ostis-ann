@@ -15,9 +15,9 @@ class BaseLoader(ABC):
     `load` is provided just for user convenience and should not be overridden.
     """
 
-    def load(self) -> list[Document]:
+    def load(self) -> Document:
         """Load data into Document objects."""
-        return list(self.lazy_load())
+        return self.lazy_load()
 
     async def aload(self) -> list[Document]:
         """Load data into Document objects asynchronously."""
@@ -30,10 +30,10 @@ class BaseLoader(ABC):
         docs = self.load()
         return _text_splitter.split_documents(docs) if _text_splitter else docs
 
-    def lazy_load(self) -> Iterator[Document]:
+    def lazy_load(self) -> Document:
         """A lazy loader for Documents."""
         if type(self).load != BaseLoader.load:
-            return iter(self.load())
+            return self.load()
         msg = f"{self.__class__.__name__} does not implement lazy_load()"
         raise NotImplementedError(msg)
 
@@ -50,7 +50,7 @@ class BaseFileParser(ABC):
        """
 
     @abstractmethod
-    def lazy_parse(self, file_path: Union[str, PurePath]) -> Iterator[Document]:
+    def lazy_parse(self, file_path: Union[str, PurePath]) -> Document:
         """Lazy parsing interface.
 
         Subclasses are required to implement this method.
@@ -62,7 +62,7 @@ class BaseFileParser(ABC):
             Generator of documents
         """
 
-    def parse(self, file_path: Union[str, PurePath]) -> list[Document]:
+    def parse(self, file_path: Union[str, PurePath]) -> Document:
         """Eagerly parse the blob into a document or documents.
 
         This is a convenience method for interactive development environment.
@@ -77,4 +77,4 @@ class BaseFileParser(ABC):
         Returns:
             List of documents
         """
-        return list(self.lazy_parse(file_path))
+        return self.lazy_parse(file_path)

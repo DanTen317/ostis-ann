@@ -69,6 +69,7 @@ class ObjectsClassifier:
         images = self.find_images(page_objects)
         skip_ids = [image.id for image in images]
         skip_ids.extend([image.caption.id for image in images if image.caption])
+        remove_ids = []
 
         for obj in page_objects:
             if obj.id in skip_ids:
@@ -79,12 +80,18 @@ class ObjectsClassifier:
                         if self._is_text_belong_to_image(obj, image):
                             image.text_blocks.append(obj)
                             skip_ids.append(obj.id)
+                            remove_ids.append(obj.id)
 
             restructured_objects.append(obj)
         restructured_objects.extend(images)
         restructured_objects.sort(key=lambda obj: obj.bbox[3])
         restructured_objects.reverse()
         page_header, ids_to_remove = self.define_page_header(restructured_objects)
+        if ids_to_remove:
+            ids_to_remove.extend(remove_ids)
+        else:
+            ids_to_remove = remove_ids
+
         if page_header:
             restructured_objects = [obj for obj in restructured_objects if obj.id not in ids_to_remove]
             restructured_objects.insert(0, page_header)
@@ -108,9 +115,12 @@ class ObjectsClassifier:
                         page_header.append(obj)
             if page_header:
                 is_header = False
-                for it in [re.match(r"\d+\s+.*\n*$", obj.text) for obj in page_header]:
+                for it in [re.match(r"(\d+\s+.*\n*$)|(^.*\d+\n$)", obj.text) for obj in page_header]:
                     if it is not None:
-                        is_header = True
+                        if re.match(r"Глава \d+\n", it.string):
+                            is_header = False
+                        else:
+                            is_header = True
                         break
 
                 if is_header:

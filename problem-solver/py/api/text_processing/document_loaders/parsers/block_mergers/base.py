@@ -1,8 +1,6 @@
 import re
 from typing import List, Optional, Tuple
 
-from sqlalchemy.testing.suite.test_reflection import metadata
-
 from api.text_processing.objects import Block, TextBlock, Header, Chapter, Section
 
 
@@ -11,7 +9,7 @@ class BlockMerger:
         self._block_end_word_wrap_regex = r"(?<=[A-Za-zА-Яа-я])-\n*$"
         self._word_wrap_regex = r"(?<=[A-Za-zА-Яа-я])-\n(?=[a-zа-я]+)"
         self._chapter_num = r"^(Глава|ГЛАВА)\s\d+"
-        self._section_num = r"^\d+\.+(\d+\.*)*\s+"
+        self._section_num = r"^\d+\.+(\d+\.*)+\s+"
         self._chapter_header_regex = r""
 
     def process(self, blocks: List[TextBlock]):
@@ -37,16 +35,34 @@ class BlockMerger:
 
         return self.merge(blocks, ids_to_merge)
 
+    def _create_text_block_from(self, block: TextBlock, text: str) -> TextBlock:
+        return TextBlock(
+            metadata=block.metadata,
+            page=block.page,
+            bbox=block.bbox,
+            text=text
+        )
+
     def find_headers(self, blocks: List[TextBlock]):
         header_blocks = []
+        blocks_to_add = []
         for block in blocks:
             if block.type == "header":
                 block.type = "page_header"
             if block.type == "text":
+                if "\n" in block.text and block.text.find("\n") != len(block.text) - 1:
+                    parts = block.text.split("\n", 1)
+                    block.text = parts[0]
+                    new_block = self._create_text_block_from(block, parts[1])
+                    i = blocks.index(block)
+                    blocks.insert(i + 1, new_block)
+                    blocks_to_add.append(new_block)
+
                 chapter = re.search(self._chapter_num, block.text)
                 section = re.search(self._section_num, block.text)
                 contents = re.search(r"О\s*Г\s*Л\s*А\s*В\s*Л\s*Е\s*Н\s*И\s*Е\s*|Оглавление|Содержание|СОДЕРЖАНИЕ",
                                      block.text)
+
                 if chapter:
                     header_blocks.append(
                         Header(
@@ -81,7 +97,7 @@ class BlockMerger:
                         )
                     )
         header_blocks_ids = [header.id for header in header_blocks]
-        blocks = [block for block in blocks if block.type!="page_header"]
+        blocks = [block for block in blocks if block.type != "page_header"]
         for i, block in enumerate(blocks):
             if block.id in header_blocks_ids:
                 header_block = next(h for h in header_blocks if h.id == block.id)
@@ -96,12 +112,12 @@ class BlockMerger:
 
         def get_section_level(header_text: str) -> str:
             # Извлекаем номер секции (например, из "1.2.3. Название" получаем "1.2.3")
-            match = re.match(r'(^\d+\.+(\d+\.*)*)', header_text.strip())
+            match = re.match(r'(^\d+\.+(\d+\.*)+)', header_text.strip())
             return match.group(1) if match else ""
 
         def is_subsection(parent_num: str, child_num: str) -> bool:
             # Проверяем, является ли child_num подсекцией parent_num
-            # Например: "1.1." является подсекцией "1."
+            # Например: "1.1.1." является подсекцией "1.1."
             if not parent_num.endswith("."):
                 parent_num += "."
             return child_num.startswith(parent_num)
